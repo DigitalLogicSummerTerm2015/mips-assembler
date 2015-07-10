@@ -22,9 +22,8 @@ module MIPS
       line.sub!(/#*/, "")  # Remove comments.
       line.strip!
 
-      read_tag line
-      return if line.empty?  # Tag line.
-
+      line = read_tag(line)
+      return if line.empty?  # Tag line, @current_addr stays the same.
 
     end
 
@@ -41,6 +40,8 @@ module MIPS
         fail MIPSSyntaxError, "Redeclaration of tag `#{tag}`"
       else
         @symbol_table[tag] = @current_addr
+        rest
       end
+    end
   end
 end
