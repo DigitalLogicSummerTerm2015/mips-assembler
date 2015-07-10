@@ -9,12 +9,15 @@ class TestAssembler < Minitest::Test
 
   def test_nop
     # nop
-    assert_equal "00000000000000000000000000000000", asm("nop")
+    assert_equal 0x00000000, asm("nop")
   end
 
   def test_memory_access
-    # (lw, sw) rt, addr
+    # (lw, sw) rt, offset(rs)
+    assert_equal 0x8d280004, asm("lw $t0, 4($t1)")
+    assert_equal 0xad280004, asm("sw $t0, 4($t1)")
     # lui rt, immi
+    assert_equal 0x3c0800ff, asm("lui $t0, 0x00ff")
   end
 
   def test_algebra
