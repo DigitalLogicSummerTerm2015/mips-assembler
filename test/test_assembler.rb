@@ -50,6 +50,6 @@ class TestAssembler < Minitest::Test
     # (blez, bgtz, bgez) rs, label
     # (j, jal) target
     # jr rs
-    # jalr rs, rd
+    # jalr rd, rs
   end
 end
