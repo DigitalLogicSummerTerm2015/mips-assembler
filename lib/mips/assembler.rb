@@ -1,12 +1,8 @@
 module MIPS
-  class MIPSSyntaxError < StandardError
-    def initialize(msg)
-      @msg = msg
-    end
+  SYNTAX = /^\s*((?<tag>[a-zA-Z]\w*)\s*:\s*)?((?<cmd>[a-z]+)\s*((?<arg1>\$?\w+)\s*(,\s*((?<arg2>\$?\w+)|((?<offset>\d+)\(\s*(?<arg2>\$\w+)\s*\)))\s*(,\s*(?<arg3>\$?\w+)\s*)?)?)?)?(#.*)?$/
 
-    def to_s
-      msg
-    end
+  # Represent a MIPS syntax error
+  class MIPSSyntaxError < StandardError
   end
 
   # Assembly MIPS codes into machine codes.
@@ -18,30 +14,33 @@ module MIPS
       @current_addr = 0x0
     end
 
-    def assembly(line)
-      line.sub!(/#*/, "")  # Remove comments.
-      line.strip!
-
-      line = read_tag(line)
-      return if line.empty?  # Tag line, @current_addr stays the same.
-
+    def assembly(src)
+      src.each_line do |line|
+        fail MIPSSyntaxError, "#{line}: Syntax error." unless SYNTAX =~ line
+        read_tag tag
+      end
     end
 
-    def self.assembly(line)
-      new.assembly(line)
+    def self.assembly(src)
+      new.assembly(src)
     end
 
     private
 
-    def read_tag(line)
-      return unless /^(?<tag>[a-zA-Z]\w*)\s*:\s*(?<rest>.*)/ =~ line
+    def read_tag(tag)
+      return if tag.nil?  # No tag.
 
       if @symbol_table.include? tag
         fail MIPSSyntaxError, "Redeclaration of tag `#{tag}`"
       else
         @symbol_table[tag] = @current_addr
-        rest
       end
+    end
+
+    def parse_register
+    end
+
+    def parse_tag
     end
   end
 end
