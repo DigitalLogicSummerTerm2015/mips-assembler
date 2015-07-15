@@ -78,4 +78,16 @@ class TestAssembler < Minitest::Test
     # jalr rd, rs
     assert_equal 0x01204009, asm("jalr $t0, $t1")
   end
+
+  def test_tag_redeclaration
+    assert_raises(MIPS::MIPSSyntaxError) do
+      assembler = MIPS::Assembler.new
+      assembler.assembly("HERE:")
+      assembler.assembly("HERE:")
+    end
+  end
+
+  def test_unknown_command
+    assert_raises(MIPS::MIPSSyntaxError) { asm("hehe") }
+  end
 end
