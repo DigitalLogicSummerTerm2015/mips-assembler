@@ -12,6 +12,9 @@ module MIPS
     jalr: 0x09
   }
 
+  REGS = %w(zero at v0 v1 a0 a1 a2 a3 t0 t1 t2 t3 t4 t5 t6 t7
+            s0 s1 s2 s3 s4 s5 s6 s7 t8 t9 k0 k1 gp sp fp rs)
+
   # Represent a MIPS syntax error
   class MIPSSyntaxError < StandardError
   end
@@ -70,10 +73,41 @@ module MIPS
       end
     end
 
-    def reg
+    def type_r(rs, rt, rd, shamt, funct)
+      rs << 21 | rt << 16 | rd << 11 | shamt << 6 | funct
     end
 
-    def tag
+    def type_i(opcode, rs, rt, immi)
+      # Notice immi could be negative.
+      opcode << 26 | rs << 21 | rt << 16 | (immi & ((1 << 16) - 1))
+    end
+
+    def type_j(opcode, target)
+      opcode << 26 | target
+    end
+
+    def reg(arg)
+      name = arg[1..-1]
+      case arg
+      when /\$([12]?[0-9])|(3[01])/
+        name.to_i
+      when (index = REGS.index(name))
+        index
+      else
+        fail MIPSSyntaxError, "#{arg}: Invalid register name"
+      end
+    end
+
+    def absolute_addr(tag)
+      addr = @symbol_table[tag]
+      fail MIPSSyntaxError, "#{tag}: Tag not found" if addr.nil?
+      addr
+    end
+
+    def relative_addr(tag)
+      addr = @symbol_table[tag]
+      fail MIPSSyntaxError, "#{tag}: Tag not found" if addr.nil?
+      addr - (@current_addr + 4)
     end
   end
 end
