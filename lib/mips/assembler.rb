@@ -34,6 +34,18 @@ module MIPS
       end
     end
 
+    def parse(cmd, arg1, arg2, arg3, offset)
+      return if cmd.nil?  # No command
+
+      case cmd
+      when "nop"
+        fail MIPSSyntaxError, "#{cmd}, Expect 0 argument" unless arg1.nil?
+        0x0
+      else
+        fail MIPSSyntaxError, "#{cmd}: Unknown command"
+      end
+    end
+
     def parse_register
     end
 
