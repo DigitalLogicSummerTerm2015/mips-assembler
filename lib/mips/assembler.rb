@@ -103,6 +103,10 @@ module MIPS
         fail MIPSSyntaxError, "Syntax: jr rs" unless arg1 && arg2.nil?
         type_r(reg(arg1), 0, 0, 0, cmd_id)
       when :jalr
+        unless arg2 && offset.nil? && arg3.nil?
+          fail MIPSSyntaxError, "Syntax: jalr rd, rs"
+        end
+        type_r(reg(arg2), 0, reg(arg1), 0, cmd_id)
       else
         fail MIPSSyntaxError, "#{cmd}: Unknown command"
       end
