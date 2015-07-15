@@ -1,5 +1,5 @@
 module MIPS
-  SYNTAX = /^\s*((?<tag>[a-zA-Z]\w*)\s*:\s*)?((?<cmd>[a-z]+)\s*((?<arg1>\$?\w+)\s*(,\s*((?<arg2>\$?\w+)|((?<offset>\d+)\(\s*(?<arg2>\$\w+)\s*\)))\s*(,\s*(?<arg3>\$?\w+)\s*)?)?)?)?(#.*)?$/
+  SYNTAX =
 
   # Represent a MIPS syntax error
   class MIPSSyntaxError < StandardError
@@ -16,7 +16,7 @@ module MIPS
 
     def assembly(src)
       src.each_line do |line|
-        fail MIPSSyntaxError, "#{line}: Syntax error." unless SYNTAX =~ line
+        fail MIPSSyntaxError, "#{line}: Syntax error." unless /^\s*((?<tag>[a-zA-Z]\w*)\s*:\s*)?((?<cmd>[a-z]+)\s*((?<arg1>\$?\w+)\s*(,\s*((?<arg2>\$?\w+)|((?<offset>\d+)\(\s*(?<arg2>\$\w+)\s*\)))\s*(,\s*(?<arg3>\$?\w+)\s*)?)?)?)?(#.*)?$/ =~ line
         read_tag tag
       end
     end
