@@ -92,6 +92,10 @@ module MIPS
         end
         type_i(cmd_id, reg(arg1), reg(arg2), relative_addr(arg3))
       when :blez, :bgtz, :bgez
+        unless arg2 && offset.nil? && arg3.nil?
+          fail MIPSSyntaxError, "Syntax: #{cmd} rs, label"
+        end
+        type_i(cmd_id, reg(arg1), (cmd == :bgez ? 1 : 0), relative_addr(arg2))
       when :j, :jal
       when :jr
       when :jalr
