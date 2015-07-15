@@ -7,6 +7,8 @@ module MIPS
     add: 0x20, addu: 0x21, sub: 0x22, subu: 0x23, and: 0x24, or: 0x25, xor: 0x26, nor: 0x27, slt: 0x2a,
     addi: 0x08, addiu: 0x09, andi: 0x0c, slti: 0x0a, sltiu: 0x0b,
     sll: 0x0, srl: 0x02, sra: 0x03,
+    beq: 0x4, bne: 0x5,
+    blez: 0x6, bgtz: 0x7, bgez: 0x1,
     j: 0x02, jal: 0x03,
     jr: 0x08,
     jalr: 0x09
@@ -84,6 +86,10 @@ module MIPS
         end
         type_r(0, reg(arg2), reg(arg1), int(arg3), cmd_id)
       when :beq, :bne
+        unless arg3 && offset.nil?
+          fail MIPSSyntaxError, "Syntax: #{cmd} rs, rt, label"
+        end
+        type_i(cmd_id, reg(arg1), reg(arg2), relative_addr(arg3))
       when :blez, :bgtz, :bgez
       when :j, :jal
       when :jr
@@ -134,7 +140,7 @@ module MIPS
     def relative_addr(tag)
       addr = @symbol_table[tag]
       fail MIPSSyntaxError, "#{tag}: Tag not found" if addr.nil?
-      addr - (@current_addr + 4)
+      (addr - @current_addr) / 4 - 1
     end
   end
 end
