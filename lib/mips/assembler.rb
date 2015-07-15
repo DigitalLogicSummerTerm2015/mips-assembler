@@ -55,8 +55,9 @@ module MIPS
     def parse(cmd, arg1, arg2, arg3, offset)
       return if cmd.nil?  # No command
 
-      cmd_id = CMD_ID[cmd.to_sym]
-      case cmd.to_sym
+      cmd = cmd.to_sym
+      cmd_id = CMD_ID[cmd]
+      case cmd
       when :nop
         fail MIPSSyntaxError, "Syntax: nop" unless arg1.nil?
         0x0
