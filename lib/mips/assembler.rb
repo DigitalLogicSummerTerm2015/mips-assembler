@@ -1,3 +1,4 @@
+# Dealing with MIPS assembly language.
 module MIPS
   # OpCode or funtc
   CMD_ID = {
@@ -57,58 +58,36 @@ module MIPS
 
       cmd = cmd.to_sym
       cmd_id = CMD_ID[cmd]
-      case cmd
-      when :nop
-        fail MIPSSyntaxError, "Syntax: nop" unless arg1.nil?
-        0x0
-      when :lw, :sw
-        unless arg1 && arg2 && offset && arg3.nil?
-          fail MIPSSyntaxError, "Syntax: #{cmd} rt, offset(rs)"
+
+      begin
+        case cmd
+        when :nop
+          0x0
+        when :lw, :sw
+          type_i(cmd_id, reg(arg2), reg(arg1), offset.to_i)
+        when :lui
+          type_i(cmd_id, 0, reg(arg1), int(arg2))
+        when :add, :addu, :sub, :subu, :and, :or, :xor, :nor, :slt
+          type_r(reg(arg2), reg(arg3), reg(arg1), 0, cmd_id)
+        when :addi, :addiu, :andi, :slti, :sltiu
+          type_i(cmd_id, reg(arg2), reg(arg1), int(arg3))
+        when :sll, :srl, :sra
+          type_r(0, reg(arg2), reg(arg1), int(arg3), cmd_id)
+        when :beq, :bne
+          type_i(cmd_id, reg(arg1), reg(arg2), relative_addr(arg3))
+        when :blez, :bgtz, :bgez
+          type_i(cmd_id, reg(arg1), (cmd == :bgez ? 1 : 0), relative_addr(arg2))
+        when :j, :jal
+          type_j(cmd_id, absolute_addr(arg1))
+        when :jr
+          type_r(reg(arg1), 0, 0, 0, cmd_id)
+        when :jalr
+          type_r(reg(arg2), 0, reg(arg1), 0, cmd_id)
+        else
+          fail MIPSSyntaxError, "#{cmd}: Unknown command"
         end
-        type_i(cmd_id, reg(arg2), reg(arg1), offset.to_i)
-      when :lui
-        unless arg2 && offset.nil? && arg3.nil?
-          fail MIPSSyntaxError, "Syntax: lui rt, imm"
-        end
-        type_i(cmd_id, 0, reg(arg1), int(arg2))
-      when :add, :addu, :sub, :subu, :and, :or, :xor, :nor, :slt
-        unless arg3 && offset.nil?
-          fail MIPSSyntaxError, "Syntax: #{cmd} rd, rs, rt"
-        end
-        type_r(reg(arg2), reg(arg3), reg(arg1), 0, cmd_id)
-      when :addi, :addiu, :andi, :slti, :sltiu
-        unless arg3 && offset.nil?
-          fail MIPSSyntaxError, "Syntax: #{cmd} rt, rs, imm"
-        end
-        type_i(cmd_id, reg(arg2), reg(arg1), int(arg3))
-      when :sll, :srl, :sra
-        unless arg3 && offset.nil?
-          fail MIPSSyntaxError, "Syntax: #{cmd} rd, rt, shamt"
-        end
-        type_r(0, reg(arg2), reg(arg1), int(arg3), cmd_id)
-      when :beq, :bne
-        unless arg3 && offset.nil?
-          fail MIPSSyntaxError, "Syntax: #{cmd} rs, rt, label"
-        end
-        type_i(cmd_id, reg(arg1), reg(arg2), relative_addr(arg3))
-      when :blez, :bgtz, :bgez
-        unless arg2 && offset.nil? && arg3.nil?
-          fail MIPSSyntaxError, "Syntax: #{cmd} rs, label"
-        end
-        type_i(cmd_id, reg(arg1), (cmd == :bgez ? 1 : 0), relative_addr(arg2))
-      when :j, :jal
-        fail MIPSSyntaxError, "Syntax: #{cmd} target" unless arg1 && arg2.nil?
-        type_j(cmd_id, absolute_addr(arg1))
-      when :jr
-        fail MIPSSyntaxError, "Syntax: jr rs" unless arg1 && arg2.nil?
-        type_r(reg(arg1), 0, 0, 0, cmd_id)
-      when :jalr
-        unless arg2 && offset.nil? && arg3.nil?
-          fail MIPSSyntaxError, "Syntax: jalr rd, rs"
-        end
-        type_r(reg(arg2), 0, reg(arg1), 0, cmd_id)
-      else
-        fail MIPSSyntaxError, "#{cmd}: Unknown command"
+      rescue  # Got error while parsing.
+        raise MIPSSyntaxError, "#{cmd}: Syntax error"
       end
     end
 
