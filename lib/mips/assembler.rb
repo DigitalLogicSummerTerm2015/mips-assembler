@@ -46,10 +46,10 @@ module MIPS
       end
     end
 
-    def parse_register
+    def reg
     end
 
-    def parse_tag
+    def tag
     end
   end
 end
