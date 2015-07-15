@@ -68,8 +68,11 @@ module MIPS
           fail MIPSSyntaxError, "Syntax: lui rt, imm"
         end
         type_i(cmd_id, 0, reg(arg1), int(arg2))
-
       when :add, :addu, :sub, :subu, :and, :or, :xor, :nor, :slt
+        unless arg3 && offset.nil?
+          fail MIPSSyntaxError, "Syntax: #{cmd} rd, rs, rt"
+        end
+        type_r(reg(arg2), reg(arg3), reg(arg1), 0, cmd_id)
       when :addi, :addiu, :andi, :slti, :sltiu
       when :sll, :srl, :sra
       when :beq, :bne
