@@ -74,6 +74,11 @@ module MIPS
         end
         type_r(reg(arg2), reg(arg3), reg(arg1), 0, cmd_id)
       when :addi, :addiu, :andi, :slti, :sltiu
+        unless arg3 && offset.nil?
+          fail MIPSSyntaxError, "Syntax: #{cmd} rt, rs, imm"
+        end
+        type_i(cmd_id, reg(arg2), reg(arg1), int(arg3))
+
       when :sll, :srl, :sra
       when :beq, :bne
       when :blez, :bgtz, :bgez
