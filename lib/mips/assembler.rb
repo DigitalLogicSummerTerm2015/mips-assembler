@@ -1,6 +1,4 @@
 module MIPS
-  SYNTAX =
-
   # Represent a MIPS syntax error
   class MIPSSyntaxError < StandardError
   end
