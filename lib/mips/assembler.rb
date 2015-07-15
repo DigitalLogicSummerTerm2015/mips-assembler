@@ -59,7 +59,16 @@ module MIPS
         fail MIPSSyntaxError, "Syntax: nop" unless arg1.nil?
         0x0
       when :lw, :sw
+        unless arg1 && arg2 && offset && arg3.nil?
+          fail MIPSSyntaxError, "Syntax: #{cmd} rt, offset(rs)"
+        end
+        type_i(cmd_id, reg(arg2), reg(arg1), offset.to_i)
       when :lui
+        unless arg2 && offset.nil? && arg3.nil?
+          fail MIPSSyntaxError, "Syntax: lui rt, imm"
+        end
+        type_i(cmd_id, 0, reg(arg1), int(arg2))
+
       when :add, :addu, :sub, :subu, :and, :or, :xor, :nor, :slt
       when :addi, :addiu, :andi, :slti, :sltiu
       when :sll, :srl, :sra
@@ -77,9 +86,9 @@ module MIPS
       rs << 21 | rt << 16 | rd << 11 | shamt << 6 | funct
     end
 
-    def type_i(opcode, rs, rt, immi)
+    def type_i(opcode, rs, rt, imm)
       # Notice immi could be negative.
-      opcode << 26 | rs << 21 | rt << 16 | (immi & ((1 << 16) - 1))
+      opcode << 26 | rs << 21 | rt << 16 | (imm & ((1 << 16) - 1))
     end
 
     def type_j(opcode, target)
@@ -88,13 +97,20 @@ module MIPS
 
     def reg(arg)
       name = arg[1..-1]
-      case arg
-      when /\$([12]?[0-9])|(3[01])/
+      if arg =~ /^\$([12]?[0-9])|(3[01])$/
         name.to_i
-      when (index = REGS.index(name))
+      elsif (index = REGS.index(name))
         index
       else
         fail MIPSSyntaxError, "#{arg}: Invalid register name"
+      end
+    end
+
+    def int(arg)
+      if /^0[xX](?<hex>\h+)$/ =~ arg
+        hex.to_i(16)
+      else
+        arg.to_i
       end
     end
 
