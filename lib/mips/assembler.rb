@@ -14,15 +14,14 @@ module MIPS
       @current_addr = 0x0
     end
 
-    def assembly(src)
-      src.each_line do |line|
-        fail MIPSSyntaxError, "#{line}: Syntax error." unless /^\s*((?<tag>[a-zA-Z]\w*)\s*:\s*)?((?<cmd>[a-z]+)\s*((?<arg1>\$?\w+)\s*(,\s*((?<arg2>\$?\w+)|((?<offset>\d+)\(\s*(?<arg2>\$\w+)\s*\)))\s*(,\s*(?<arg3>\$?\w+)\s*)?)?)?)?(#.*)?$/ =~ line
-        read_tag tag
-      end
+    def assembly(line)
+      fail MIPSSyntaxError, "#{line}: Syntax error." unless /^\s*((?<tag>[a-zA-Z]\w*)\s*:\s*)?((?<cmd>[a-z]+)\s*((?<arg1>\$?\w+)\s*(,\s*((?<arg2>\$?\w+)|((?<offset>\d+)\(\s*(?<arg2>\$\w+)\s*\)))\s*(,\s*(?<arg3>\$?\w+)\s*)?)?)?)?(#.*)?$/ =~ line
+      read_tag tag
+      parse(cmd, arg1, arg2, arg3, offset)
     end
 
-    def self.assembly(src)
-      new.assembly(src)
+    def self.assembly(line)
+      new.assembly(line)
     end
 
     private
