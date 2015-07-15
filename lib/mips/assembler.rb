@@ -97,6 +97,8 @@ module MIPS
         end
         type_i(cmd_id, reg(arg1), (cmd == :bgez ? 1 : 0), relative_addr(arg2))
       when :j, :jal
+        fail MIPSSyntaxError, "Syntax: #{cmd} target" unless arg1 && arg2.nil?
+        type_j(cmd_id, absolute_addr(arg1))
       when :jr
       when :jalr
       else
@@ -114,7 +116,7 @@ module MIPS
     end
 
     def type_j(opcode, target)
-      opcode << 26 | target
+      opcode << 26 | (target >> 2 & ((1 << 26) - 1))
     end
 
     def reg(arg)
