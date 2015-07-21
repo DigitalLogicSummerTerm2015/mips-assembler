@@ -48,6 +48,16 @@ Reset:
     addi    $t0, $zero, 3       # TCON = 3
     sw      $t0, 8($s7)
 
+    # Enter a dead loop.
+    lui     $t0, 0x7fff
+    addi    $t1, $zero, 0xffff
+    or      $t0, $t0, $t1       # Now $t0 = 0x7fffffff
+    jal     Next
+Next:
+    and     $ra, $t0, $ra       # Clear MSB.
+    jr      $ra
+
+
 Break:
     # Disable break & clear status.
     lui     $s7, 0x4000
