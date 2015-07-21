@@ -75,7 +75,7 @@ Break:
 Loop:
     blt     $s0, $s1, Swap
     sub     $s0, $s0, $s1
-    b       Loop
+    j       Loop
 Swap:
     add     $t0, $s0, $zero
     add     $s0, $s1, $zero
