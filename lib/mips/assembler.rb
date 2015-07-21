@@ -77,7 +77,7 @@ module MIPS
       cmd_id = CMD_ID[cmd]
 
       begin
-        result = case cmd
+        case cmd
         when :nop
           0x0
         when :lw, :sw
@@ -106,8 +106,6 @@ module MIPS
       rescue  # Got error while parsing.
         raise MIPSSyntaxError, "#{cmd}: Syntax error"
       end
-      @current_addr += 4
-      result
     end
 
     def type_r(rs, rt, rd, shamt, funct)

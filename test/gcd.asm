@@ -97,7 +97,7 @@ Swap:
     addi    $t0, $zero, 1
     sw      $t0, 40($s7)        # tx_en = 1
     sw      $zero, 40($s7)      # tx_en = 0
-    j Done
+    j       Done
 
 Zero:
     add     $v0, $zero, $zero   # $v0 = 0 if a/b = 0.
