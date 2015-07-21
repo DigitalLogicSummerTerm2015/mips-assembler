@@ -66,10 +66,13 @@ Break:
     sw      $t0, 8($s7)         # TCON &= 0xfffffff9
 
     # Calculate GCD.
-    add     $v0, $zero, $zero   # Initialize result to 0
-    # Assume a@$a0, b@$a1.
-    beq     $a0, $zero, Done
-    beq     $a1, $zero, Done
+    lw      $t0, 32($s7)        # $t0 = ready
+    beq     $t0, $zero, Done    # Just Display previous $v0 if not ready.
+
+    lw      $a0, 24($s7)        # $a0 = a
+    lw      $a1, 28($s7)        # $a1 = b
+    beq     $a0, $zero, Zero
+    beq     $a1, $zero, Zero
     # Copy to $s0, $s1.
     add     $s0, $a0, $zero
     add     $s1, $a1, $zero
@@ -87,7 +90,16 @@ Swap:
     bne     $s1, $zero, Loop
     add     $v0, $s0, $zero
 
-Done:  # Now v0 = result
+    # Now v0 = result, send it.
+    sw      $v0, 36($s7)
+    addi    $t0, $zero, 1
+    sw      $t0, 40($s7)        # tx_en = 1
+    sw      $zero, 40($s7)      # tx_en = 0
+    j Done
+
+Zero:
+    add     $v0, $zero, $zero   # $v0 = 0 if a/b = 0.
+Done:
     sw      $v0, 12($s7)        # Display result on the LED.
 
     lw      $t4, 20($s7)        # Digit tube
