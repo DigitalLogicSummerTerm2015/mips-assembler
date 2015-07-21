@@ -51,7 +51,7 @@ Next:
     lui     $t0, 0x8000
     nor     $t0, $t0, $zero     # Now $t0 = 0x7fffffff
     and     $ra, $t0, $ra
-    addi    $ra, $ra, 5
+    addi    $ra, $ra, 20
     jr      $ra                 # Clear MSB.
 
     addi    $t0, $zero, 3       # TCON = 3
