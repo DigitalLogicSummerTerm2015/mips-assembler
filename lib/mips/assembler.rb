@@ -89,6 +89,8 @@ module MIPS
       rescue  # Got error while parsing.
         raise MIPSSyntaxError, "#{cmd}: Syntax error"
       end
+
+      @current_addr += 4
     end
 
     def type_r(rs, rt, rd, shamt, funct)
