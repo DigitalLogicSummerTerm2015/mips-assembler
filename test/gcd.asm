@@ -59,8 +59,8 @@ Break:
     # Calculate GCD.
     addi    $v0, $zero, $zero   # Initialize result to 0
     # Assume a@$s0, b@$s1
-    and     $t0, $s0, $s1
-    beq     $t0, $zero, Done
+    beq     $s0, $zero, Done
+    beq     $s1, $zero, Done
 
 Loop:
     blt     $s0, $s1, Swap
@@ -74,8 +74,8 @@ Swap:
     bne     $s1, $zero, Loop
     add     $v0, $s0, $zero
 
-Done:
-
+Done:  # Now v0 = result
+    sw      $v0, 12($s7)        # Display result on the LED.
 
     # Enable break.
     lw      $t0, 8($s7)
