@@ -99,3 +99,4 @@ Return:
     jr      $k0                 # Jump back
 
 Exception:
+    jr      $k0                 # Jump back
