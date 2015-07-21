@@ -89,7 +89,8 @@ Done:  # Now v0 = result
 
     # Enable break.
     lw      $t0, 8($s7)
-    ori     $t0, $t0, 0x0002    # TCON |= 0x00000002
+    addi    $t1, $zero, 0x0002
+    or      $t0, $t0, $t1       # TCON |= 0x00000002
 
 Return:
     jr      $k0                 # Jump back
