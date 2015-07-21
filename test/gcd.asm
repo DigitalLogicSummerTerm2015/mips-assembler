@@ -45,15 +45,15 @@ Reset:
     sw      $t0, 0($s7)
     addi    $t0, $zero, 0xffff  # TL = 0xffffffff
     sw      $t0, 4($s7)
-    addi    $t0, $zero, 3       # TCON = 3
-    sw      $t0, 8($s7)
 
-    # Enter a dead loop.
+    jal     Next                # Get next address.
+Next:
     lui     $t0, 0x8000
     nor     $t0, $t0, $zero     # Now $t0 = 0x7fffffff
-    jal     Next
-Next:
     and     $ra, $t0, $ra       # Clear MSB.
+    addi    $ra, $ra, 6         # Get ready for a dead loop.
+    addi    $t0, $zero, 3       # TCON = 3
+    sw      $t0, 8($s7)
     jr      $ra
 
 
