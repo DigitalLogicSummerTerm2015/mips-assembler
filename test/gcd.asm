@@ -110,7 +110,7 @@ Done:
     addi    $t4, $t4, 0x000f    # $t4 = AN[3:0]
     srl     $t4, $t4, 1         # Scan from left to right.
     bne     $t4, $zero, Choose
-    addi    $t4, $zero, 0x0008  # Init left-most digit.
+    addi    $t4, $zero, 0x0008  # Init right-most digit.
 Choose:
     addi    $t0, $zero, 0x0001
     addi    $t1, $zero, 0x0002
