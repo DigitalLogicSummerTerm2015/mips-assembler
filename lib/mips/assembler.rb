@@ -31,14 +31,31 @@ module MIPS
       @current_addr = 0x0
     end
 
-    def assembly(line)
-      fail MIPSSyntaxError, "#{line}: Syntax error." unless /^\s*((?<tag>[a-zA-Z]\w*)\s*:\s*)?((?<cmd>[a-z]+)\s*((?<arg1>\$?\w+)\s*(,\s*((?<arg2>\$?\w+)|((?<offset>\d+)\(\s*(?<arg2>\$\w+)\s*\)))\s*(,\s*(?<arg3>\$?\w+)\s*)?)?)?)?(#.*)?$/ =~ line
-      read_tag tag
-      parse(cmd, arg1, arg2, arg3, offset)
+    def assembly(src)
+      cmds = []
+      # Read tags.
+      src.each_line do |line|
+        fail MIPSSyntaxError, "#{line}: Syntax error." unless /^\s*((?<tag>[a-zA-Z]\w*)\s*:\s*)?((?<cmd>[a-z]+)\s*((?<arg1>\$?\w+)\s*(,\s*((?<arg2>\$?\w+)|((?<offset>\d+)\(\s*(?<arg2>\$\w+)\s*\)))\s*(,\s*(?<arg3>\$?\w+)\s*)?)?)?)?(#.*)?$/ =~ line
+        read_tag tag
+        if cmd
+          cmds << [cmd, arg1, arg2, arg3, offset]
+          @current_addr += 4
+        end
+      end
+
+      # Parse commands.
+      @current_addr = 0
+      result = []
+      cmds.each do |cmd|
+        line_result = parse(*cmd)
+        result << line_result if line_result
+        @current_addr += 4
+      end
+      result
     end
 
-    def self.assembly(line)
-      new.assembly(line)
+    def self.assembly(src)
+      new.assembly(src)
     end
 
     private
@@ -60,7 +77,7 @@ module MIPS
       cmd_id = CMD_ID[cmd]
 
       begin
-        case cmd
+        result = case cmd
         when :nop
           0x0
         when :lw, :sw
@@ -89,8 +106,8 @@ module MIPS
       rescue  # Got error while parsing.
         raise MIPSSyntaxError, "#{cmd}: Syntax error"
       end
-
       @current_addr += 4
+      result
     end
 
     def type_r(rs, rt, rd, shamt, funct)
