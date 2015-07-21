@@ -50,12 +50,14 @@ Reset:
 Next:
     lui     $t0, 0x8000
     nor     $t0, $t0, $zero     # Now $t0 = 0x7fffffff
-    and     $ra, $t0, $ra       # Clear MSB.
-    addi    $ra, $ra, 6         # Get ready for a dead loop.
+    and     $ra, $t0, $ra
+    addi    $ra, $ra, 5
+    jr      $ra                 # Clear MSB.
+
     addi    $t0, $zero, 3       # TCON = 3
     sw      $t0, 8($s7)
-    jr      $ra
-
+DeadLoop:
+    j       DeadLoop
 
 Break:
     # Disable break & clear status.
