@@ -68,8 +68,8 @@ Break:
     # Calculate GCD.
     add     $v0, $zero, $zero   # Initialize result to 0
     # Assume a@$a0, b@$a1.
-    beq     $s0, $zero, Done
-    beq     $s1, $zero, Done
+    beq     $a0, $zero, Done
+    beq     $a1, $zero, Done
     # Copy to $s0, $s1.
     add     $s0, $a0, $zero
     add     $s1, $a1, $zero
