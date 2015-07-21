@@ -90,10 +90,51 @@ Swap:
 Done:  # Now v0 = result
     sw      $v0, 12($s7)        # Display result on the LED.
 
+    lw      $t4, 20($s7)        # Digit tube
+    # Show next digit.
+    srl     $t4, $t4, 8
+    addi    $t4, $t4, 0x000f    # $t4 = AN[3:0]
+    srl     $t4, $t4, 1         # Scan from left to right.
+    bne     $t4, $zero, Choose
+    addi    $t4, $zero, 0x0008  # Init left-most digit.
+Choose:
+    addi    $t0, $zero, 0x0001
+    addi    $t1, $zero, 0x0002
+    addi    $t2, $zero, 0x0004
+    addi    $t3, $zero, 0x0008
+    beq     $t4, $t0, Digit0
+    beq     $t4, $t1, Digit1
+    beq     $t4, $t2, Digit2
+    beq     $t4, $t3, Digit3
+    addi    $t4, $zero, 0x0008  # Else init to digit0.
+
+Digit0:
+    srl     $t5, $a0, 4
+    j       Display
+Digit1:
+    add     $t5, $a0, $zero
+    j       Display
+Digit2:
+    srl     $t5, $a1, 4
+    j       Display
+Digit3:
+    add     $t5, $a1, $zero
+    j       Display
+
+Display:
+    andi    $t5, $t5, 0x000f    # $t5 = index
+    sll     $t5, $t5, 2
+    lw      $t5, 0($t5)
+    sll     $t4, $t4, 8
+    add     $t0, $t4, $t5
+    sw      $t0, 20($s7)
+
     # Enable break.
     lw      $t0, 8($s7)
     addi    $t1, $zero, 0x0002
     or      $t0, $t0, $t1       # TCON |= 0x00000002
+    sw      $t0, 8($s7)
+
 
 Return:
     jr      $k0                 # Jump back
