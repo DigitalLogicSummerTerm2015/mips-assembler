@@ -49,9 +49,8 @@ Reset:
     sw      $t0, 8($s7)
 
     # Enter a dead loop.
-    lui     $t0, 0x7fff
-    addi    $t1, $zero, 0xffff
-    or      $t0, $t0, $t1       # Now $t0 = 0x7fffffff
+    lui     $t0, 0x8000
+    nor     $t0, $t0, $zero     # Now $t0 = 0x7fffffff
     jal     Next
 Next:
     and     $ra, $t0, $ra       # Clear MSB.
@@ -67,7 +66,7 @@ Break:
     sw      $t0, 8($s7)         # TCON &= 0xfffffff9
 
     # Calculate GCD.
-    addi    $v0, $zero, $zero   # Initialize result to 0
+    add     $v0, $zero, $zero   # Initialize result to 0
     # Assume a@$a0, b@$a1.
     beq     $s0, $zero, Done
     beq     $s1, $zero, Done
@@ -76,7 +75,8 @@ Break:
     add     $s1, $a1, $zero
 
 Loop:
-    blt     $s0, $s1, Swap
+    slt     $t0, $s0, $s1
+    bne     $t0, $zero, Swap
     sub     $s0, $s0, $s1
     j       Loop
 Swap:
