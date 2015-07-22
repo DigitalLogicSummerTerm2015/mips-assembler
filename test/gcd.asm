@@ -57,7 +57,7 @@ Next:
     addi    $t0, $zero, 3       # TCON = 3
     sw      $t0, 8($s7)
 DeadLoop:
-    j       DeadLoop
+    j       DeadLoop            # 49
 
 Break:
     # Disable break & clear status.
@@ -95,7 +95,7 @@ Swap:
     # Now v0 = result, send it.
     sw      $v0, 36($s7)
     addi    $t0, $zero, 1
-    sw      $t0, 40($s7)        # tx_en = 1
+    sw      $t0, 40($s7)        # tx_en = 1, 74
     sw      $zero, 40($s7)      # tx_en = 0
     j       Done
 
