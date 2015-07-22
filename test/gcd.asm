@@ -72,9 +72,17 @@ Break:
     beq     $t0, $zero, Done    # Just Display previous $v0 if not ready.
 
     lw      $a0, 24($s7)        # $a0 = a
+    nop
+    nop
     lw      $a1, 28($s7)        # $a1 = b
+    nop
+    nop
     beq     $a0, $zero, Zero
+    nop
+    nop
     beq     $a1, $zero, Zero
+    nop
+    nop
     # Copy to $s0, $s1.
     add     $s0, $a0, $zero
     add     $s1, $a1, $zero
@@ -107,12 +115,10 @@ Done:
     lw      $t4, 20($s7)        # Digit tube
     # Show next digit.
     srl     $t4, $t4, 8
-    addi    $t4, $t4, 0x000f    # $t4 = AN[3:0]
-    srl     $t4, $t4, 1         # Scan from left to right.
-    bne     $t4, $zero, Choose
-    addi    $t4, $zero, 0x0008  # Init right-most digit.
-Choose:
+    andi    $t4, $t4, 0x000f    # $t4 = AN[3:0]
+    sll     $t4, $t4, 1         # Scan from right to left.
     addi    $t0, $zero, 0x0001
+
     addi    $t1, $zero, 0x0002
     addi    $t2, $zero, 0x0004
     addi    $t3, $zero, 0x0008
@@ -120,7 +126,7 @@ Choose:
     beq     $t4, $t1, Digit1
     beq     $t4, $t2, Digit2
     beq     $t4, $t3, Digit3
-    addi    $t4, $zero, 0x0008  # Else init to digit0.
+    addi    $t4, $zero, 0x0001  # Else init to digit0.
 
 Digit0:
     srl     $t5, $a0, 4
