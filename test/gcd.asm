@@ -107,11 +107,10 @@ Done:
     lw      $t4, 20($s7)        # Digit tube
     # Show next digit.
     srl     $t4, $t4, 8
-    addi    $t4, $t4, 0x000f    # $t4 = AN[3:0]
-    srl     $t4, $t4, 1         # Scan from left to right.
-    bne     $t4, $zero, Choose
-    addi    $t4, $zero, 0x0008  # Init right-most digit.
-Choose:
+    xor     $t4, $t4, $zero     # $t4 = ~$t4
+    sll     $t4, $t4, 1         # Scan from right to left.
+    andi    $t4, $t4, 0x000f    # $t4 = AN[3:0]
+    # Choose
     addi    $t0, $zero, 0x0001
     addi    $t1, $zero, 0x0002
     addi    $t2, $zero, 0x0004
@@ -120,7 +119,7 @@ Choose:
     beq     $t4, $t1, Digit1
     beq     $t4, $t2, Digit2
     beq     $t4, $t3, Digit3
-    addi    $t4, $zero, 0x0008  # Else init to digit0.
+    addi    $t4, $zero, 0x0001  # Else init to digit0.
 
 Digit0:
     srl     $t5, $a0, 4
@@ -139,6 +138,9 @@ Display:
     andi    $t5, $t5, 0x000f    # $t5 = index
     sll     $t5, $t5, 2
     lw      $t5, 0($t5)
+
+    xor     $t4, $t4, $zero     # $t4 = ~$t4
+    andi    $t4, $t4, 0x000f    # $t4 = AN[3:0]
     sll     $t4, $t4, 8
     add     $t0, $t4, $t5
     sw      $t0, 20($s7)
