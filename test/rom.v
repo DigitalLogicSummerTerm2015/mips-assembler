@@ -10,7 +10,7 @@ reg [31:0] data;
 reg [31:0] ROM_DATA[ROM_SIZE-1:0];
 
 always@(*)
-    case(addr[7:2])  // Address Must Be Word Aligned.
+    case(addr[9:2])  // Address Must Be Word Aligned.
         0: data <= 32'h08000003;
         1: data <= 32'h08000032;
         2: data <= 32'h08000087;
