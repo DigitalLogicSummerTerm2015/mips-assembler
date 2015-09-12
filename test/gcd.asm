@@ -42,9 +42,21 @@ Reset:
     lui     $s7, 0x4000
     sw      $zero, 8($s7)       # TCON = 0
     addi    $t0, $zero, 0x8000  # TH = 0xffff8000
+    nop
+    nop
+    nop
     sw      $t0, 0($s7)
+    nop
+    nop
+    nop
     addi    $t0, $zero, 0xffff  # TL = 0xffffffff
+    nop
+    nop
+    nop
     sw      $t0, 4($s7)
+    nop
+    nop
+    nop
 
     jal     Next                # Get next address.
 Next:
@@ -55,23 +67,53 @@ Next:
     jr      $ra                 # Clear MSB.
 
     addi    $t0, $zero, 3       # TCON = 3
+    nop
+    nop
+    nop
     sw      $t0, 8($s7)
+    nop
+    nop
+    nop
 DeadLoop:
     j       DeadLoop            # 49
 
 Break:
     # Disable break & clear status.
     lui     $s7, 0x4000
+    nop
+    nop
+    nop
     lw      $t0, 8($s7)         # TCON
+    nop
+    nop
+    nop
     addi    $t1, $zero, 0xfff9  # $t1 = 0xfffffff9
     and     $t0, $t0, $t1
+    nop
+    nop
+    nop
     sw      $t0, 8($s7)         # TCON &= 0xfffffff9
+    nop
+    nop
+    nop
 
     # Calculate GCD.
     lw      $t0, 32($s7)        # $t0 = ready
+    nop
+    nop
+    nop
     beq     $t0, $zero, Done    # Just Display previous $v0 if not ready.
+    nop
+    nop
+    nop
     lw      $a0, 24($s7)        # $a0 = a
+    nop
+    nop
+    nop
     lw      $a1, 28($s7)        # $a1 = b
+    nop
+    nop
+    nop
     beq     $a0, $zero, Zero0
     beq     $a1, $zero, Zero1
     # Copy to $s0, $s1.
@@ -101,14 +143,32 @@ Zero1:
 
 Send:
     # Now v0 = result, send it.
+    nop
+    nop
+    nop
     sw      $v0, 36($s7)
     addi    $t0, $zero, 1
+    nop
+    nop
+    nop
     sw      $t0, 40($s7)        # tx_en = 1, 74
+    nop
+    nop
+    nop
     sw      $zero, 40($s7)      # tx_en = 0
+    nop
+    nop
+    nop
     sw      $v0, 12($s7)        # Display result on the LED.
 
 Done:
+    nop
+    nop
+    nop
     lw      $t4, 20($s7)        # Digit tube
+    nop
+    nop
+    nop
     # Show next digit.
     srl     $t4, $t4, 8
     sll     $t4, $t4, 1         # Scan from right to left.
@@ -141,16 +201,33 @@ Display:
     andi    $t5, $t5, 0x000f    # $t5 = index
     sll     $t5, $t5, 2
     lw      $t5, 0($t5)
+    nop
+    nop
+    nop
     sll     $t4, $t4, 8
     add     $t0, $t4, $t5
+    nop
+    nop
+    nop
     sw      $t0, 20($s7)
+    nop
+    nop
+    nop
 
     # Enable break.
     lw      $t0, 8($s7)
+    nop
+    nop
+    nop
     addi    $t1, $zero, 0x0002
     or      $t0, $t0, $t1       # TCON |= 0x00000002
+    nop
+    nop
+    nop
     sw      $t0, 8($s7)
-
+    nop
+    nop
+    nop
 
 Return:
     jr      $k0                 # Jump back
