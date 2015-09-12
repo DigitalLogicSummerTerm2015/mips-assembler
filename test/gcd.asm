@@ -65,39 +65,15 @@ Break:
     lw      $t0, 8($s7)         # TCON
     addi    $t1, $zero, 0xfff9  # $t1 = 0xfffffff9
     and     $t0, $t0, $t1
-    nop
-    nop
-    nop
     sw      $t0, 8($s7)         # TCON &= 0xfffffff9
 
     # Calculate GCD.
-    nop
-    nop
-    nop
     lw      $t0, 32($s7)        # $t0 = ready
-    nop
-    nop
-    nop
     beq     $t0, $zero, Done    # Just Display previous $v0 if not ready.
-    nop
-    nop
-    nop
     lw      $a0, 24($s7)        # $a0 = a
-    nop
-    nop
-    nop
     lw      $a1, 28($s7)        # $a1 = b
-    nop
-    nop
-    nop
     beq     $a0, $zero, Zero
-    nop
-    nop
-    nop
     beq     $a1, $zero, Zero
-    nop
-    nop
-    nop
     # Copy to $s0, $s1.
     add     $s0, $a0, $zero
     add     $s1, $a1, $zero
