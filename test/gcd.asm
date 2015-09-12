@@ -131,17 +131,17 @@ Done:
     # Show next digit.
     srl     $t4, $t4, 8
     sll     $t4, $t4, 1         # Scan from right to left.
-    ori     $t4, $t4, 0x0001
+    addi    $t4, $t4, 0x0001
     andi    $t4, $t4, 0x000f    # $t4 = AN[3:0]
 
-    ori    $t1, $zero, 0xfffd
-    ori    $t2, $zero, 0xfffb
-    ori    $t3, $zero, 0xfff7
+    addi    $t1, $zero, 0x000d
+    addi    $t2, $zero, 0x000b
+    addi    $t3, $zero, 0x0007
 
     beq     $t4, $t1, Digit1
     beq     $t4, $t2, Digit2
     beq     $t4, $t3, Digit3
-    addi    $t4, $zero, 0xfffe  # Else init to digit0.
+    addi    $t4, $zero, 0x000e  # Else init to digit0.
 
 Digit0:
     srl     $t5, $a0, 4
