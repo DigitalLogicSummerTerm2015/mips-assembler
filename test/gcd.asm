@@ -90,17 +90,16 @@ Swap:
 
     bne     $s1, $zero, Loop
     add     $v0, $s0, $zero
-
-    j       Done
+    j       Send
 
 Zero0:
     add     $v0, $zero, $a1     # $v0 = $a1 if a = 0.
-    j       Done
+    j       Send
 
 Zero1:
     add     $v0, $zero, $a0     # $v0 = $a0 if b = 0.
 
-Done:
+Send:
     # Now v0 = result, send it.
     sw      $v0, 36($s7)
     addi    $t0, $zero, 1
@@ -108,6 +107,7 @@ Done:
     sw      $zero, 40($s7)      # tx_en = 0
     sw      $v0, 12($s7)        # Display result on the LED.
 
+Done:
     lw      $t4, 20($s7)        # Digit tube
     # Show next digit.
     srl     $t4, $t4, 8
