@@ -144,16 +144,16 @@ Done:
     addi    $t4, $zero, 0x000e  # Else init to digit0.
 
 Digit0:
-    srl     $t5, $a0, 4
+    add     $t5, $a1, $zero
     j       Display
 Digit1:
-    add     $t5, $a0, $zero
-    j       Display
-Digit2:
     srl     $t5, $a1, 4
     j       Display
+Digit2:
+    add     $t5, $a0, $zero
+    j       Display
 Digit3:
-    add     $t5, $a1, $zero
+    srl     $t5, $a0, 4
     j       Display
 
 Display:
