@@ -5,37 +5,37 @@
 
 Reset:
     # Digit tube decoding.
-    addi    $t0, $zero, 0x0040  # 0
+    addi    $t0, $zero, 0x00c0  # 0
     sw      $t0, 0($zero)
-    addi    $t0, $zero, 0x0079  # 1
+    addi    $t0, $zero, 0x00f9  # 1
     sw      $t0, 4($zero)
-    addi    $t0, $zero, 0x0024  # 2
+    addi    $t0, $zero, 0x00a4  # 2
     sw      $t0, 8($zero)
-    addi    $t0, $zero, 0x0030  # 3
+    addi    $t0, $zero, 0x00b0  # 3
     sw      $t0, 12($zero)
-    addi    $t0, $zero, 0x0019  # 4
+    addi    $t0, $zero, 0x0099  # 4
     sw      $t0, 16($zero)
-    addi    $t0, $zero, 0x0012  # 5
+    addi    $t0, $zero, 0x0092  # 5
     sw      $t0, 20($zero)
-    addi    $t0, $zero, 0x0002  # 6
+    addi    $t0, $zero, 0x0082  # 6
     sw      $t0, 24($zero)
-    addi    $t0, $zero, 0x0078  # 7
+    addi    $t0, $zero, 0x00f8  # 7
     sw      $t0, 28($zero)
-    addi    $t0, $zero, 0x0000  # 8
+    addi    $t0, $zero, 0x0080  # 8
     sw      $t0, 32($zero)
-    addi    $t0, $zero, 0x0010  # 9
+    addi    $t0, $zero, 0x0090  # 9
     sw      $t0, 36($zero)
-    addi    $t0, $zero, 0x0008  # A
+    addi    $t0, $zero, 0x0088  # A
     sw      $t0, 40($zero)
-    addi    $t0, $zero, 0x0003  # b
+    addi    $t0, $zero, 0x0083  # b
     sw      $t0, 44($zero)
-    addi    $t0, $zero, 0x0046  # C
+    addi    $t0, $zero, 0x00c6  # C
     sw      $t0, 48($zero)
-    addi    $t0, $zero, 0x0021  # d
+    addi    $t0, $zero, 0x00a1  # d
     sw      $t0, 52($zero)
-    addi    $t0, $zero, 0x0006  # E
+    addi    $t0, $zero, 0x0086  # E
     sw      $t0, 56($zero)
-    addi    $t0, $zero, 0x000e  # F
+    addi    $t0, $zero, 0x008e  # F
     sw      $t0, 60($zero)
 
     # Initialize timer @ 0x40000000.
@@ -72,8 +72,8 @@ Break:
     beq     $t0, $zero, Done    # Just Display previous $v0 if not ready.
     lw      $a0, 24($s7)        # $a0 = a
     lw      $a1, 28($s7)        # $a1 = b
-    beq     $a0, $zero, Zero
-    beq     $a1, $zero, Zero
+    beq     $a0, $zero, Zero0
+    beq     $a1, $zero, Zero1
     # Copy to $s0, $s1.
     add     $s0, $a0, $zero
     add     $s1, $a1, $zero
@@ -91,16 +91,21 @@ Swap:
     bne     $s1, $zero, Loop
     add     $v0, $s0, $zero
 
+    j       Done
+
+Zero0:
+    add     $v0, $zero, $a1     # $v0 = $a1 if a = 0.
+    j       Done
+
+Zero1:
+    add     $v0, $zero, $a0     # $v0 = $a0 if b = 0.
+
+Done:
     # Now v0 = result, send it.
     sw      $v0, 36($s7)
     addi    $t0, $zero, 1
     sw      $t0, 40($s7)        # tx_en = 1, 74
     sw      $zero, 40($s7)      # tx_en = 0
-    j       Done
-
-Zero:
-    add     $v0, $zero, $zero   # $v0 = 0 if a/b = 0.
-Done:
     sw      $v0, 12($s7)        # Display result on the LED.
 
     lw      $t4, 20($s7)        # Digit tube
